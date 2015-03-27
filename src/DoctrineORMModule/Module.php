@@ -140,7 +140,13 @@ class Module implements
         $helperSet     = $cli->getHelperSet();
 
         $helperSet->set(new QuestionHelper(), 'question');
-        $helperSet->set(new ConnectionHelper($entityManager->getConnection()), 'db');
-        $helperSet->set(new EntityManagerHelper($entityManager), 'em');
+        // $helperSet->set(new ConnectionHelper($entityManager->getConnection()), 'db');
+        // $helperSet->set(new EntityManagerHelper($entityManager), 'em');
+        foreach(array_keys($config['doctrine']['entitymanager']) as $emConfig) {
+		    /* @var $entityManager \Doctrine\ORM\EntityManager */
+		    $entityManager = $serviceLocator->get('doctrine.entitymanager.' . $emConfig);
+		    $helperSet->set(new EntityManagerHelper($entityManager), $emConfig);
+		    $helperSet->set(new ConnectionHelper($entityManager->getConnection()), 'db');
+	    }
     }
 }
